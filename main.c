@@ -13,7 +13,7 @@ int main()
     printf("List after 20 additions...Should print 1-20\n");
     display(list->head);
     
-    printf("\n\nContains testing...\n");
+    printf("\n\nContains testing....\n");
     for(i = 0; i < 20; i++) {
         result = contains(list, i + 1);
         if(result != 1)

@@ -20,7 +20,7 @@
 /* Adds a node to the tail of the list. */ 
 void addlast(struct list *lis, int data) {
     struct node *newnode = nalloc(data);
-    struct node *tmp = lis->head;
+    struct node *tmp = lis->head; 
 
     /* If the list is initially empty */
     if(lis->head == NULL) {

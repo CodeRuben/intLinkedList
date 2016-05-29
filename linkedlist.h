@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 struct node {
-    int data;
+    int data; 
     struct node *next;
 };
 
