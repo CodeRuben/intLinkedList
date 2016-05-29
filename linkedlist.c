@@ -15,7 +15,7 @@
     }
     newnode->next = lis->head;
     lis->head = newnode;
-}
+} 
 
 /* Adds a node to the tail of the list. */ 
 void addlast(struct list *lis, int data) {

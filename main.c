@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "linkedlist.h"
 
-int main()
+int main() 
 {
     Linkedlist *list = newlist();
     int i, result, flag = 0; 
