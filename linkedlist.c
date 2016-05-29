@@ -1,110 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist.h"
-#define TRUE 1
-#define FALSE 0
 
-struct node * nalloc(int);
-struct list * newlist();
-
-/**
- * Adds a new node to the start of the linked list
- * @param struct list, struct containing the head pointer
- * @param data, value to be stored in the list
- */
- void addfirst(struct list *l, int data) {
+/* Adds a node to the beginning of the list. */
+ void addfirst(struct list *lis, int data) {
     struct node *newnode = nalloc(data);
 
     if(newnode == NULL)
         return;
-    newnode->next = l->head;
-    l->head = newnode;
+    if(lis->head == NULL) {
+        lis->head = newnode;
+        lis->tail = newnode;
+        return;
+    }
+    newnode->next = lis->head;
+    lis->head = newnode;
 }
 
-/**
- * Adds a new node to the end of the linked list
- * @param struct list, struct containing the head pointer
- * @param data, value to be stored in the list
- */
+/* Adds a node to the tail of the list. */ 
 void addlast(struct list *lis, int data) {
     struct node *newnode = nalloc(data);
     struct node *tmp = lis->head;
 
+    /* If the list is initially empty */
     if(lis->head == NULL) {
         lis->head = newnode;
+        lis->tail = newnode;
         return;
     }
-    /* Get to the tail end of the list */
-    while(tmp->next != NULL)
-        tmp = tmp->next;
-    tmp->next = newnode;
+    lis->tail->next = newnode;
+    lis->tail = newnode;
 }
 
-/**
- * Checks to see if the list has a given value
- * @param struct list, struct containing the head pointer
- * @param data, the value to be searched for
- * @return 1 if the value is found, 0 otherwise
- */
-int contains(struct list *lis, int data) {
+/* Checks to see if the list contains a certain element*/
+bool contains(struct list *lis, int data) {
     struct node *current = lis->head;
 
     if(current == NULL)
-        return FALSE;
+        return false;
 
     while(current != NULL) {
         if(current->data == data)
-            return TRUE;
+            return true;
         current = current->next;
     }
-    return FALSE;
+    return false;
 }
 
-/**
- * Deletes the first element in the linked list
- * @param struct list, struct containing head pointer
- * @return 1 if the value was deleted, 0 otherwise
- */
-int deletefirst(struct list *lis) {
+/* Deletes the first node of the list. */
+bool deletefirst(struct list *lis) {
     struct node *tmp = lis->head;
 
     if(tmp == NULL)
-        return -1;
+        return false;
+
+    /* One element list */
+    if(tmp->next == NULL) {
+        lis->head = lis->tail = NULL;
+        free(tmp);
+        return true;
+    }
     lis->head = tmp->next;
-    free(tmp);
-    return 0;
+    free(tmp);  // Deallocate memory of deleted node
+    return true;
 }
 
-/**
- * Deletes the last element in the linked list
- * @param struct list, struct containing head pointer
- * @return 1 if the value was deleted, 0 otherwise
- */
-int deletelast(struct list *lis) {
+/* Deletes the last element in the list. */
+bool deletelast(struct list *lis) {
     struct node *current = lis->head;
     struct node *previous = NULL;
 
     if(current == NULL)
-        return FALSE;
+        return false;
     /* If list has one element */
     if(current->next == NULL) {
          lis->head = NULL;
+         lis->tail = NULL;
          free(current);
-         return TRUE;
+         return true;
     }
     while(current->next != NULL) {
         previous = current;
         current = current->next;
     }
     previous->next = NULL;
+    lis->tail = previous;
     free(current);  // Deallocate memory of deleted node
-    return TRUE;
+    return true;
 }
 
-/**
- * Prints all of the elements in the list
- * @param struct node, the head pointer of the list
- */
+/* Searches for and deletes a node from the list. */
+bool delete(struct list *lis, int element) {
+    struct node *current = lis->head;
+    struct node *previous = NULL;
+
+    if(current == NULL)
+        return false;
+
+    while(current != NULL && current->data != element) {
+        previous = current;
+        current = current->next;
+    }
+    if(current == NULL)       // Item not found
+        return false;
+    else if(current == lis->head)   // Item is in the first position
+        lis->head = lis->head->next;
+    else if(current == lis->tail) {  // Item is in the last position
+        previous->next = NULL;
+        lis->tail = previous;
+    }
+    else                     // Item is in the middle of the list
+        previous->next = current->next;
+    
+    if(lis->head == NULL)
+        lis->tail = NULL;
+
+    return true;
+}
+
+/* Prints out the contents of the linked list. */
 void display(struct node *head) {
     while(head != NULL) {
         printf("%d ", head->data);
@@ -112,11 +126,13 @@ void display(struct node *head) {
     }
 }
 
-/**
- * Creates and allocates memory for a new node
- * @param data, the value to be stored in the node
- * @return struct node *, a pointer to the new node
- */
+/* Deallocates memory for every node in the list. */
+void freelist(struct list *lis) {
+    while(lis->head != NULL)
+        deletefirst(lis);
+}
+
+/* Allocates space for a new node. */
 struct node * nalloc(int data) {
     struct node *p = (struct node *) malloc(sizeof(struct node));
     /* Initialize the members of the new node*/
@@ -127,15 +143,13 @@ struct node * nalloc(int data) {
     return p;
 }
 
-/**
- * Creates a new list structure. The list contains a pointer
- * that will serve as the head of the linked list.
- * @return struct list *, a pointed to the new list structure
- */
+/* Initializes a new linked list. */
 struct list * newlist() {
     struct list *l = (struct list *) malloc(sizeof(struct list));
-    if(l != NULL)
+    if(l != NULL) {
         l->head = NULL;
+        l->tail = NULL;
+    }
     return l;
 }
 

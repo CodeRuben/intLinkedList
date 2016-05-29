@@ -4,13 +4,13 @@
 
 int main()
 {
-    struct list *list = newlist();
+    Linkedlist *list = newlist();
     int i, result, flag = 0; 
 
     for(i = 0; i < 20; i++)
         addlast(list, i + 1);
 
-    printf("List after 20 additions....\n");
+    printf("List after 20 additions...Should print 1-20\n");
     display(list->head);
     
     printf("\n\nContains testing...\n");
@@ -26,9 +26,21 @@ int main()
 
     for(i = 0; i < 10; i++)
         deletefirst(list);
-
-    printf("\nList after 10 deletions....\n");
+    printf("\nList after 10 deletions...Should print 11-20\n");
     display(list->head);
+    
+    for(i = 0; i < 10; i++)
+        deletelast(list);
+    printf("\n\nList after 10 deletions...Shouldn't print anything\n");
+    display(list->head);
+    
+    /* Testing freelist() function */
+    for(i = 0; i < 10; i++)
+        addlast(list, i + 1);
+    freelist(list);
+    if(list->head != NULL)
+        printf("freelist failed");
+    
     printf("\n\n");
     
     return 0;
